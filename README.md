@@ -64,6 +64,8 @@ AMAN خدمة تشغيلية تساعد العميل على تقليل خطر ف
 - [خارطة الطريق](docs/ROADMAP.md)
 - [قرارات التصميم](docs/DECISIONS.md)
 - [دليل التسليم والاستمرارية](ops/DEVELOPMENT-HANDOFF.md)
+- [دليل الهوية البصرية](brand/BRAND-GUIDE.md)
+- [الصورة المرجعية للهوية](brand/assets/aman-brand-reference.png)
 
 ## مراجع
 
