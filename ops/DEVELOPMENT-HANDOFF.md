@@ -6,14 +6,14 @@
 
 ## الحالة الحالية
 
-- نوع العمل: تخطيط وهيكلة قبل التنفيذ البرمجي.
+- نوع العمل: تنفيذ أساس تطبيق Flutter وربطه بالمصادقة الفعلية.
 - المستودع الخارجي: `https://github.com/aaaaubad-byte/amansoon`.
 - الفرع الرئيسي: `main`.
-- آخر Commit مرحّل: `2afa16c` قبل هذا التحديث.
+- آخر Commit مرحّل: `2afa16c` قبل هذا التحديث؛ تغييرات جلسة التطبيق لم تُرحّل بعد.
 - مشروع Supabase: `amansoon`، Project Ref `yqsnnooupyhahohyyiho`.
 - آخر مرحلة مكتملة: إنشاء الهجرة الأولى للجداول والعلاقات وسياسات RLS.
-- المرحلة التالية: تهيئة تطبيق Flutter وربطه بـ Supabase Auth.
-- آخر تغيير: تطبيق `initial_aman_schema_and_rls` على قاعدة amansoon.
+- المرحلة الحالية: تهيئة تطبيق Flutter وربطه بـ Supabase Auth — الأساس البرمجي منفذ، والتحقق النهائي ينتظر Flutter SDK.
+- آخر تغيير: إضافة `aman_app` مع إعداد Supabase، تدفق التسجيل/الدخول، قراءة `profiles.role`، وواجهة عربية أولية.
 - المرجع البصري: `brand/assets/aman-brand-reference.png`.
 
 ## قواعد العمل
@@ -85,4 +85,15 @@ SUPABASE_ANON_KEY=
 
 ## آخر نقطة استئناف
 
-ابدأ بإنشاء مشروع Flutter داخل `aman_app`، وطبّق ألوان وخطوط `brand/BRAND-GUIDE.md`، ثم أضف حزمة Supabase واربطه بمشروع `amansoon`. بعد ذلك نفذ تدفق التسجيل والدخول الحقيقي واختبر RLS بمستخدم عميل ومستخدم مدير.
+نقطة الاستئناف التالية: توفير Flutter SDK وAndroid SDK، ثم تشغيل `flutter pub get` و`flutter test` و`flutter build apk` باستخدام متغيري `SUPABASE_URL` و`SUPABASE_ANON_KEY`. بعد نجاح البناء، اختبر التسجيل والدخول وقراءة الدور وRLS بمستخدم عميل ومستخدم مدير، ثم ابدأ واجهات الشركات والأرقام في المرحلة 2.
+
+## تحديث جلسة 2026-09-19
+
+- الحساب/البيئة: `aaaaubad-byte/amansoon`، Supabase `amansoon` (`yqsnnooupyhahohyyiho`).
+- المرحلة: المرحلة 0، أساس التطبيق.
+- ما تم إنجازه: إنشاء `pubspec.yaml`، إعدادات البيئة، عميل Supabase، مستودع المصادقة، الثيم العربي، شاشات Auth/Home، واختبار إعدادات بسيط.
+- الملفات المهمة: `aman_app/lib/main.dart`، `aman_app/lib/data/supabase/repositories/auth_repository.dart`، `aman_app/README.md`.
+- الاختبارات التي نجحت: `git diff --check`، فحص عدم وجود مفاتيح فعلية. لم تُشغل اختبارات Flutter لعدم توفر SDK.
+- المشكلات المفتوحة: يلزم تثبيت Flutter وAndroid SDK، واختبار تدفق حقيقي بمستخدمين واختبار RLS.
+- القرار التالي: تشغيل الاختبارات والبناء في بيئة Flutter، ثم إضافة تدفق الشركات والأرقام.
+- الأسرار المطلوبة: `SUPABASE_URL` و`SUPABASE_ANON_KEY` فقط وقت التشغيل/البناء؛ يمنع `service_role` داخل التطبيق.

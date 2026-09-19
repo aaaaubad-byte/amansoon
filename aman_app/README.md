@@ -1,26 +1,40 @@
 # AMAN Android App
 
-هذا المجلد مخصص لتطبيق Flutter Android APK. لم تُحسم الهوية البصرية بعد؛ ستضاف بعد استلام الصورة المرجعية.
+تطبيق Flutter عربي وRTL للعميل والمدير، متصل بـ Supabase عبر المفتاح العام فقط.
 
-## نقطة البدء
+## المتطلبات
 
-- Flutter + Dart.
-- Arabic RTL وMobile-First.
-- Supabase Auth وPostgreSQL.
-- العميل والمدير داخل تطبيق واحد مع صلاحيات مختلفة.
+- Flutter SDK حديث متوافق مع Dart 3.3 أو أحدث.
+- Android SDK لبناء APK.
+- مشروع Supabase تطويري يحتوي على جدول `profiles` والهجرات المطبقة.
 
-## الاتصال
+## التشغيل
 
-يُمرر `SUPABASE_URL` و`SUPABASE_ANON_KEY` وقت البناء أو من ملف إعداد محلي غير مرفوع إلى Git. يمنع منعًا تامًا وضع `service_role` key داخل APK.
+لا تضع المفاتيح في Git. مررها وقت التشغيل أو البناء:
 
-## أول تدفق
-
-```text
-تسجيل حساب حقيقي
-→ إنشاء profile
-→ تسجيل الدخول
-→ تحديد الدور
-→ فتح واجهة العميل أو المدير
+```bash
+flutter pub get
+flutter run \\
+  --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co \\
+  --dart-define=SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
 ```
 
-يتطلب بناء APK وجود Flutter SDK وAndroid SDK في بيئة التنفيذ.
+ولبناء APK تجريبي:
+
+```bash
+flutter build apk --debug \\
+  --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co \\
+  --dart-define=SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+```
+
+يمنع منعًا تامًا وضع `service_role` key داخل APK أو ملفات المشروع.
+
+## التدفق المنفذ
+
+- تسجيل عميل جديد عبر Supabase Auth مع `full_name` و`phone` في metadata.
+- تسجيل الدخول بالبريد وكلمة المرور.
+- قراءة ملف المستخدم من `public.profiles` بعد تسجيل الدخول.
+- توجيه أولي بحسب الدور `customer` أو `admin`.
+- تسجيل الخروج.
+
+إذا لم تُمرر متغيرات البيئة، يعرض التطبيق شاشة إعداد بدل إظهار نجاح وهمي أو محاولة اتصال غير مهيأة.
