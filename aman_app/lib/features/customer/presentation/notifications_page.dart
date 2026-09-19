@@ -52,10 +52,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const ListView(
+              return ListView(
                 children: [
-                  SizedBox(height: 160),
-                  Center(child: CircularProgressIndicator()),
+                  const SizedBox(height: 160),
+                  const Center(child: CircularProgressIndicator()),
                 ],
               );
             }
@@ -72,10 +72,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
             }
             final notifications = snapshot.data ?? const <AmanNotification>[];
             if (notifications.isEmpty) {
-              return const ListView(
+              return ListView(
                 children: [
-                  SizedBox(height: 160),
-                  Center(child: Text('لا توجد إشعارات جديدة.')),
+                  const SizedBox(height: 160),
+                  const Center(child: Text('لا توجد إشعارات جديدة.')),
                 ],
               );
             }

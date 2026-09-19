@@ -240,3 +240,18 @@ SUPABASE_ANON_KEY=
 - تم تحديث `.gitignore` لاستبعاد ملفات Flutter وAndroid ومفاتيح Keystore.
 - لا يوجد Android project مولد داخل المستودع حتى الآن؛ يلزم Flutter SDK لإنشاء مجلد Android وضبط application ID وبناء APK.
 - لم يجد فحص Supabase امتدادي `pg_cron` أو `pg_net`، لذلك الجدولة التلقائية تحتاج تفعيل Scheduler أو Edge Function مجدولة لاحقًا.
+
+## تحقق بيئة Flutter وAPK — 2026-09-19
+
+- الحساب/البيئة: `aaaaubad-byte/amansoon`، Supabase `amansoon` (`yqsnnooupyhahohyyiho`).
+- تم تثبيت Flutter 3.47.5 وDart 3.13.4 وAndroid SDK 36 وOpenJDK 21.
+- تم توليد مجلد `aman_app/android` القياسي، وربط أيقونة AMAN الرسمية باسم التطبيق `أمان`.
+- تم إصلاح خطأ بناء في `payment_methods_page.dart`، وإزالة اختبار Flutter الافتراضي غير المتوافق.
+- تم تحديث التطبيق لاستخدام `SUPABASE_PUBLISHABLE_KEY` مع fallback إلى `SUPABASE_ANON_KEY`.
+- التحقق: `flutter test` نجح — 11 اختبارًا.
+- التحقق: `flutter build apk --debug` نجح باستخدام URL ومفتاح publishable الفعليين لمشروع `amansoon`.
+- الناتج: `aman_app/build/app/outputs/flutter-apk/app-debug.apk`، الحجم 149 MB، SHA-256: `31c6d3850118fc74e6396e8df805fd680bf609735fef5d04844927a1dc9af71d`.
+- تحقق APK: ملف ZIP سليم، الحزمة `com.aman.aman_app`، الاسم الظاهر `أمان`، وطلب INTERNET موجود.
+- تحقق الاتصال: المفتاح publishable وصل إلى Supabase وأعاد `42501` عند قراءة جدول محمي، وهو رفض صلاحيات RLS متوقع لا فشل اتصال.
+- ملاحظات مفتوحة: `flutter analyze` يمر دون أخطاء ترجمة مع 26 ملاحظة lint غير مانعة للبناء؛ اختبار التسجيل وRLS بمستخدم عميل ومدير يحتاج جهاز Android أو محاكيًا.
+- الأسرار: لم يُحفظ المفتاح الحقيقي في Git؛ يُمرر فقط عبر `--dart-define` وقت البناء أو التشغيل.

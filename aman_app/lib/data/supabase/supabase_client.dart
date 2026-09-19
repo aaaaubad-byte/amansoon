@@ -11,7 +11,7 @@ class AmanSupabase {
     if (!AppConfig.isConfigured) return;
     await Supabase.initialize(
       url: AppConfig.supabaseUrl,
-      anonKey: AppConfig.supabaseAnonKey,
+      anonKey: AppConfig.supabaseKey,
     );
   }
 }

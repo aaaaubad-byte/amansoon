@@ -16,7 +16,7 @@
 flutter pub get
 flutter run \\
   --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co \\
-  --dart-define=SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_KEY
 ```
 
 ولبناء APK تجريبي:
@@ -24,7 +24,7 @@ flutter run \\
 ```bash
 flutter build apk --debug \\
   --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co \\
-  --dart-define=SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_KEY
 ```
 
 يمنع منعًا تامًا وضع `service_role` key داخل APK أو ملفات المشروع.

@@ -6,7 +6,7 @@
 
 ## المرحلة 0: تهيئة تطبيق Flutter وSupabase
 
-**الحالة: قيد التنفيذ — الأساس البرمجي مكتمل، والتحقق النهائي ينتظر بيئة Flutter/Android.**
+**الحالة: مكتملة — تم التحقق من Flutter/Android وبناء APK Debug متصل بمشروع Supabase `amansoon`.**
 
 **الهدف:** إنشاء أساس قابل للاستمرار.
 
@@ -16,7 +16,7 @@
 - مشروع Flutter بصيغة Android APK.
 - دعم العربية وRTL وMaterial 3.
 - ربط Supabase Auth وSupabase PostgreSQL.
-- إعداد متغيرات `SUPABASE_URL` و`SUPABASE_ANON_KEY` فقط داخل البيئة.
+- إعداد متغيرات `SUPABASE_URL` و`SUPABASE_PUBLISHABLE_KEY` فقط داخل البيئة، مع دعم `SUPABASE_ANON_KEY` للتوافق.
 - مجلد هجرات SQL وسياسات RLS.
 - توثيق تشغيل المشروع وبناء APK.
 
@@ -28,7 +28,10 @@
 - تنفيذ تسجيل عميل جديد، تسجيل الدخول، تسجيل الخروج، وقراءة الدور من `public.profiles`.
 - إضافة واجهة عربية RTL ومسار أولي منفصل للعميل والمدير.
 - توثيق أوامر التشغيل والبناء باستخدام `--dart-define` دون أسرار داخل Git.
-- تعذر تشغيل `flutter test` و`flutter build` لأن Flutter SDK وAndroid SDK غير متوفرين في بيئة التنفيذ الحالية.
+- تثبيت Flutter 3.47.5 وDart 3.13.4 وAndroid SDK 36 وJDK 21.
+- توليد هيكل Android القياسي وربط أيقونة AMAN الرسمية واسم التطبيق `أمان`.
+- نجاح `flutter test` بعدد 11 اختبارًا، وبناء `app-debug.apk` متصلًا فعليًا بمشروع Supabase `amansoon`.
+- بقيت 26 ملاحظة lint غير مانعة للبناء، معظمها deprecated APIs واقتراحات أسلوبية.
 
 ## المرحلة 1: مخطط Supabase والمصادقة
 
