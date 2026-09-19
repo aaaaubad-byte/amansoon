@@ -7,6 +7,7 @@ import '../../../data/supabase/repositories/catalog_repository.dart';
 import 'admin_tasks_page.dart';
 import 'request_review_page.dart';
 import 'task_settings_page.dart';
+import 'payment_methods_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -129,6 +130,9 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 onOpenSettings: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const TaskSettingsPage()),
                 ),
+                onOpenPayments: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PaymentMethodsPage()),
+                ),
               ),
               _PackagesTab(companies: companies, catalog: _catalog),
             ],
@@ -150,6 +154,7 @@ class _CompaniesTab extends StatelessWidget {
     required this.onOpenRequests,
     required this.onOpenTasks,
     required this.onOpenSettings,
+    required this.onOpenPayments,
   });
 
   final List<TelecomCompany> companies;
@@ -161,6 +166,7 @@ class _CompaniesTab extends StatelessWidget {
   final VoidCallback onOpenRequests;
   final VoidCallback onOpenTasks;
   final VoidCallback onOpenSettings;
+  final VoidCallback onOpenPayments;
 
   @override
   Widget build(BuildContext context) {
@@ -184,6 +190,11 @@ class _CompaniesTab extends StatelessWidget {
               tooltip: 'إعدادات المهام',
               onPressed: onOpenSettings,
               icon: const Icon(Icons.settings_outlined),
+            ),
+            IconButton(
+              tooltip: 'وسائل الدفع',
+              onPressed: onOpenPayments,
+              icon: const Icon(Icons.payments_outlined),
             ),
             FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('إضافة')),
           ],
