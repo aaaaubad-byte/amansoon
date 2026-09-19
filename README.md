@@ -66,6 +66,8 @@ AMAN خدمة تشغيلية تساعد العميل على تقليل خطر ف
 - [دليل التسليم والاستمرارية](ops/DEVELOPMENT-HANDOFF.md)
 - [دليل الهوية البصرية](brand/BRAND-GUIDE.md)
 - [الصورة المرجعية للهوية](brand/assets/aman-brand-reference.png)
+- [قائمة تجهيز الإصدار والاختبار](docs/RELEASE-CHECKLIST.md)
+- [سجل التغييرات](aman_app/CHANGELOG.md)
 
 ## مراجع
 

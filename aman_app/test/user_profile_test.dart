@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import '../lib/data/models/user_profile.dart';
+import '../lib/data/supabase/repositories/admin_overview_repository.dart';
 
 void main() {
   test('maps user profile role and status', () {
@@ -16,5 +17,18 @@ void main() {
     expect(profile.fullName, 'عميل أمان');
     expect(profile.isActive, isTrue);
     expect(profile.isAdmin, isFalse);
+  });
+
+  test('stores admin overview counters', () {
+    const overview = AdminOverview(
+      customers: 4,
+      activeProtections: 2,
+      pendingRequests: 1,
+      openTasks: 3,
+      overdueTasks: 1,
+    );
+
+    expect(overview.customers, 4);
+    expect(overview.overdueTasks, 1);
   });
 }

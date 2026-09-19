@@ -17,9 +17,9 @@ class UserManagementRepository {
   }
 
   Future<void> setStatus({required String userId, required bool active}) async {
-    await _client
-        .from('profiles')
-        .update({'status': active ? 'active' : 'inactive', 'updated_at': DateTime.now().toUtc().toIso8601String()})
-        .eq('id', userId);
+    await _client.rpc('admin_set_profile_status', params: {
+      'p_user_id': userId,
+      'p_active': active,
+    });
   }
 }
