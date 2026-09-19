@@ -6,6 +6,7 @@ import 'data/models/telecom_company.dart';
 import 'data/supabase/repositories/auth_repository.dart';
 import 'data/supabase/repositories/catalog_repository.dart';
 import 'features/admin/presentation/admin_dashboard.dart';
+import 'features/customer/presentation/protection_request_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({required this.repository, required this.profile, super.key});
@@ -57,6 +58,14 @@ class CustomerDashboard extends StatelessWidget {
           ),
           icon: const Icon(Icons.phone_android),
           label: const Text('أرقامي'),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ProtectionRequestPage()),
+          ),
+          icon: const Icon(Icons.shield_outlined),
+          label: const Text('طلب حماية جديد'),
         ),
       ],
     );
