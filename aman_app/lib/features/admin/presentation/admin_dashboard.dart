@@ -9,6 +9,7 @@ import 'request_review_page.dart';
 import 'task_settings_page.dart';
 import 'payment_methods_page.dart';
 import 'audit_logs_page.dart';
+import 'admin_protections_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -137,6 +138,9 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 onOpenAuditLogs: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const AuditLogsPage()),
                 ),
+                onOpenProtections: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AdminProtectionsPage()),
+                ),
               ),
               _PackagesTab(companies: companies, catalog: _catalog),
             ],
@@ -160,6 +164,7 @@ class _CompaniesTab extends StatelessWidget {
     required this.onOpenSettings,
     required this.onOpenPayments,
     required this.onOpenAuditLogs,
+    required this.onOpenProtections,
   });
 
   final List<TelecomCompany> companies;
@@ -173,6 +178,7 @@ class _CompaniesTab extends StatelessWidget {
   final VoidCallback onOpenSettings;
   final VoidCallback onOpenPayments;
   final VoidCallback onOpenAuditLogs;
+  final VoidCallback onOpenProtections;
 
   @override
   Widget build(BuildContext context) {
@@ -206,6 +212,11 @@ class _CompaniesTab extends StatelessWidget {
               tooltip: 'سجل العمليات',
               onPressed: onOpenAuditLogs,
               icon: const Icon(Icons.manage_history_outlined),
+            ),
+            IconButton(
+              tooltip: 'حمايات العملاء',
+              onPressed: onOpenProtections,
+              icon: const Icon(Icons.shield_outlined),
             ),
             FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('إضافة')),
           ],

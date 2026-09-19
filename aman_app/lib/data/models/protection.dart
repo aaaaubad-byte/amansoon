@@ -7,6 +7,8 @@ class Protection {
     required this.startsAt,
     required this.expiresAt,
     required this.status,
+    this.customerId,
+    this.telecomCompanyId,
   });
 
   final String id;
@@ -16,6 +18,8 @@ class Protection {
   final DateTime startsAt;
   final DateTime expiresAt;
   final String status;
+  final String? customerId;
+  final String? telecomCompanyId;
 
   factory Protection.fromJson(Map<String, dynamic> json) {
     return Protection(
@@ -26,6 +30,8 @@ class Protection {
       startsAt: DateTime.parse(json['starts_at'] as String),
       expiresAt: DateTime.parse(json['expires_at'] as String),
       status: json['status'] as String,
+      customerId: json['customer_id'] as String?,
+      telecomCompanyId: json['telecom_company_id'] as String?,
     );
   }
 }

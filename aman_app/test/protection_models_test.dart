@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:aman_app/data/models/payment_method.dart';
+import 'package:aman_app/data/models/protection.dart';
 import 'package:aman_app/data/models/protection_request.dart';
 
 void main() {
@@ -26,5 +27,23 @@ void main() {
     expect(payment.type, 'bank');
     expect(request.status, 'under_review');
     expect(request.durationDaysSnapshot, 30);
+  });
+
+  test('maps protection rows for customer and admin views', () {
+    final protection = Protection.fromJson({
+      'id': 'protection-1',
+      'customer_id': 'customer-1',
+      'customer_number_id': 'number-1',
+      'telecom_company_id': 'company-1',
+      'protection_value': 25,
+      'duration_days': 30,
+      'starts_at': '2026-09-19T01:00:00Z',
+      'expires_at': '2026-10-19T01:00:00Z',
+      'status': 'active',
+    });
+
+    expect(protection.customerId, 'customer-1');
+    expect(protection.telecomCompanyId, 'company-1');
+    expect(protection.status, 'active');
   });
 }
