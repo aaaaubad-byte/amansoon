@@ -11,8 +11,8 @@
 - الفرع الرئيسي: `main`.
 - آخر Commit مرحّل: `7b42928`.
 - آخر مرحلة مكتملة: ترحيل وثائق المشروع الأساسية.
-- المرحلة التالية: المرحلة 0، تهيئة المستودع والبيئة.
-- آخر تغيير: رفع حزمة التخطيط إلى المستودع.
+- المرحلة التالية: المرحلة 0، تهيئة تطبيق Flutter وربطه بـ Supabase.
+- آخر تغيير: اعتماد Flutter APK وSupabase كقاعدة مركزية.
 
 ## قواعد العمل
 
@@ -48,8 +48,8 @@
 3. اقرأ `README.md` و`docs/PRODUCT-SPEC.md` و`docs/ARCHITECTURE.md` و`docs/ROADMAP.md`.
 4. اقرأ آخر تحديث في هذا الملف.
 5. أنشئ `.env` محليًا اعتمادًا على `.env.example`، ولا تنسخ قيم الأسرار من Git.
-6. شغّل PostgreSQL المحلية أو اربط قاعدة Staging المصرح بها.
-7. شغّل الهجرات وSeed الخاص بالبيئة فقط.
+6. اربط التطبيق بمشروع Supabase تطويري مصرح به.
+7. شغّل هجرات SQL وسياسات RLS الخاصة بالبيئة فقط.
 8. نفذ الاختبارات قبل استئناف التطوير.
 9. أكمل من أول بند غير مكتمل في خارطة الطريق.
 
@@ -72,16 +72,9 @@ chore(docs): update development handoff
 لا تضع قيمًا حقيقية هنا. أسماء المتغيرات الأولية المقترحة:
 
 ```text
-DATABASE_URL=
-DIRECT_DATABASE_URL=
-AUTH_SECRET=
-REDIS_URL=
-S3_ENDPOINT=
-S3_BUCKET=
-S3_ACCESS_KEY_ID=
-S3_SECRET_ACCESS_KEY=
-APP_BASE_URL=
-API_BASE_URL=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+# لا تضع SUPABASE_SERVICE_ROLE_KEY داخل APK أو Git.
 ```
 
 ## خطة النسخ الاحتياطي
@@ -90,4 +83,4 @@ API_BASE_URL=
 
 ## آخر نقطة استئناف
 
-ابدأ بإنشاء هيكل `frontend` و`backend`، ثم إعداد PostgreSQL وPrisma، ثم أول هجرة تشمل المستخدمين والأدوار. بعد ذلك حدّث هذا الملف وسجل Commit.
+ابدأ بإنشاء مشروع Flutter، ثم إضافة حزمة Supabase وربطه بمشروع Supabase تطويري. بعد ذلك أنشئ أول هجرات SQL للجداول وسياسات RLS، ثم حدّث هذا الملف وسجل Commit.

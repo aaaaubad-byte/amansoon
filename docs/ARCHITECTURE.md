@@ -1,151 +1,163 @@
-# البنية التقنية المقترحة
+# البنية التقنية المعتمدة
 
 ## القرار المعماري
 
-يبدأ المشروع كتطبيق **Modular Monolith**. يعني ذلك أن Backend واحدًا يحتوي وحدات أعمال مستقلة بحدود واضحة، مع قاعدة بيانات واحدة ومعاملات موحدة. هذا الخيار أسرع وأقل مخاطرة من Microservices في مرحلة التأسيس، مع إبقاء الوحدات قابلة للفصل مستقبلًا.
+يُبنى AMAN كتطبيق Android بصيغة APK باستخدام Flutter، مع قاعدة بيانات مركزية على Supabase في الخطة المجانية مبدئيًا. لا يعتمد التطبيق على قاعدة محلية كمصدر للحالة التجارية. يمكن استخدام تخزين محلي محدود للتخزين المؤقت وتحسين تجربة الاستخدام، لكن Supabase هي مصدر الحقيقة.
+
+تتكون البنية من تطبيق واحد يحتوي على واجهتي العميل والمدير، مع صلاحيات مختلفة. تستخدم الواجهتان نفس قاعدة البيانات المركزية ونفس قواعد الأعمال، وتُفرض الصلاحيات داخل PostgreSQL عبر Row Level Security، مع التحقق أيضًا في طبقة التطبيق.
 
 ## الرسم العام
 
 ```text
-Browser / PWA
+Flutter APK
     |
+    | Supabase Flutter SDK / HTTPS
     v
-Next.js Frontend
-    |
-    | REST + JSON
-    v
-NestJS Backend
-    |
-    +-- Auth & Authorization
-    +-- Customer Domain
-    +-- Protection Domain
-    +-- Operations Domain
-    +-- Notification Domain
-    +-- Audit Domain
-    |
-    +-- Prisma
-    v
-PostgreSQL (source of truth)
-    |
-    +-- Redis/BullMQ for background work when enabled
-    +-- S3-compatible storage for logos/documents
+Supabase
+    ├── Auth
+    ├── PostgreSQL Database
+    ├── Row Level Security (RLS)
+    ├── Storage
+    └── Edge Functions عند الحاجة للعمليات الحساسة
 ```
 
-## Frontend
+## لماذا Supabase في هذه المرحلة؟
 
-يستخدم Next.js وReact وTypeScript. تستخدم TanStack Query للبيانات القادمة من API، وReact Hook Form مع Zod للنماذج، وTailwind CSS مع مكونات متوافقة مع RTL.
+توفّر Supabase قاعدة PostgreSQL فعلية، ومصادقة، وتخزين ملفات، وواجهة وصول آمنة من تطبيق Flutter. هذا يلغي الحاجة إلى استضافة Backend منفصل في مرحلة البداية، ويتيح للعميل والمدير مشاركة نفس البيانات من أجهزة مختلفة.
 
-تنظيم الواجهة حسب النطاق:
+يجب عدم وضع `service_role` key داخل APK. يستخدم التطبيق مفتاح العميل العام المخصص للمتصفح/التطبيق مع سياسات RLS، وتنفذ العمليات التي تحتاج صلاحية موثوقة داخل Edge Functions أو عبر إجراءات PostgreSQL محمية.
+
+## Frontend: Flutter APK
+
+يستخدم المشروع Flutter وDart مع دعم عربي وRTL وتصميم Mobile-First. يجب أن تعمل واجهة العميل وواجهة المدير على الهاتف، مع دعم الأجهزة اللوحية لاحقًا.
 
 ```text
-frontend/src/
-├── app/
-│   ├── (public)/
-│   ├── (customer)/
-│   └── (admin)/
-├── components/
-├── features/
-│   ├── auth/
-│   ├── numbers/
-│   ├── protection-requests/
-│   ├── protections/
-│   ├── operational-tasks/
-│   └── notifications/
+aman_app/
 ├── lib/
-└── types/
+│   ├── core/
+│   │   ├── config/
+│   │   ├── theme/
+│   │   ├── routing/
+│   │   ├── localization/
+│   │   └── errors/
+│   ├── data/
+│   │   ├── supabase/
+│   │   │   ├── supabase_client.dart
+│   │   │   └── repositories/
+│   │   ├── local_cache/
+│   │   └── models/
+│   ├── domain/
+│   │   ├── entities/
+│   │   ├── repositories/
+│   │   └── use_cases/
+│   ├── features/
+│   │   ├── auth/
+│   │   ├── customer/
+│   │   ├── admin/
+│   │   ├── numbers/
+│   │   ├── protection_requests/
+│   │   ├── protections/
+│   │   ├── operational_tasks/
+│   │   ├── notifications/
+│   │   └── audit_log/
+│   └── main.dart
+└── test/
 ```
 
-لا يحتوي Frontend على أسرار أو اتصال مباشر بقاعدة البيانات. إخفاء زر أو مسار في الواجهة ليس طبقة صلاحيات؛ القرار النهائي في Backend.
+يفصل المشروع بين `presentation` و`domain` و`data`. لا تستدعي الشاشات Supabase مباشرة في كل موضع؛ تستخدم Use Cases وRepositories حتى تبقى قواعد الأعمال قابلة للاختبار والتغيير.
 
-## Backend
+## قاعدة البيانات في Supabase
 
-يستخدم NestJS مع وحدات مستقلة:
+تُدار الجداول والهجرات من خلال ملفات SQL versioned داخل المستودع. لا تعتمد على تعديلات يدوية غير موثقة في لوحة Supabase.
 
-```text
-backend/src/
-├── common/
-├── auth/
-├── users/
-├── customers/
-├── telecom-companies/
-├── customer-numbers/
-├── packages/
-├── payment-methods/
-├── protection-requests/
-├── protections/
-├── task-settings/
-├── operational-tasks/
-├── notifications/
-├── financial-records/
-├── audit-log/
-├── system-settings/
-└── jobs/
-```
+الكيانات الأساسية:
 
-كل وحدة تحتوي على Controller وService وDTOs وPolicies واختبارات. لا تضع منطق القبول أو إكمال المهمة داخل Controller؛ يجب أن يكون في Service مجال الأعمال، داخل Transaction.
+- `profiles` وربطها بـ `auth.users`.
+- `customers` وبيانات العميل.
+- `telecom_companies`.
+- `customer_numbers`.
+- `protection_packages`.
+- `payment_methods`.
+- `protection_requests`.
+- `protections`.
+- `task_configurations`.
+- `task_categories` و`task_types`.
+- `operational_tasks`.
+- `financial_records`.
+- `notifications`.
+- `audit_logs`.
+- `system_settings`.
 
-## قاعدة البيانات
+يجب إضافة فهارس للبحث بالعلاقات والحالات والتواريخ. يجب استخدام قيود فريدة وقيود مرجعية لمنع التكرار والروابط غير الصحيحة.
 
-PostgreSQL هي مصدر الحقيقة. يستخدم Prisma للمخطط والهجرات والاستعلامات. يجب فرض القيود المهمة في قاعدة البيانات بالإضافة إلى التحقق في Backend.
+## Row Level Security
 
-البيانات التاريخية تحفظ في حقول Snapshot، منها قيمة ومدة الباقة في الطلب والحماية، ومبلغ المهمة وإعدادات دورتها في المهمة. بهذه الطريقة لا تتأثر السجلات السابقة بتعديلات المستقبل.
+RLS إلزامية على كل جدول متاح من التطبيق. القواعد الأساسية:
 
-## الصلاحيات والعزل
+- العميل يقرأ ويعدل بيانات ملفه المسموح بها فقط.
+- العميل يقرأ أرقامه وطلباته وحماياته وإشعاراته فقط.
+- العميل لا يقرأ الجداول التشغيلية الداخلية إلا إذا قررت سياسة المنتج غير ذلك.
+- المدير يقرأ ويعدل البيانات الإدارية وفق دور وصلاحية محفوظة في ملفه.
+- لا يعتمد النظام على `customer_id` القادم من التطبيق لتحديد المالك دون التحقق من `auth.uid()`.
+- لا يستخدم التطبيق `service_role` key.
 
-يستخدم النظام دورين ابتدائيين: `CUSTOMER` و`ADMIN`. يبنى نظام الصلاحيات على Permissions قابلة للتوسع. كل استعلام للعميل يحدد المالك من الجلسة الحالية، ولا يثق بمعرف العميل القادم من المتصفح.
+يفضل إنشاء دوال SQL مساعدة مثل `is_admin()` و`current_customer_id()` لتوحيد السياسات وتقليل أخطاء تكرارها.
 
-## المعاملات الحساسة
+## العمليات الحساسة
 
-### قبول طلب
+### قبول طلب الحماية
 
-تحديث الطلب، إنشاء الحماية، تحديث الرقم، إنشاء أول مهمة، تسجيل العملية، وإنشاء الإشعار يجب أن تكون عملية مترابطة. إذا لم تكن الإشعارات مضمونة داخل نفس المعاملة، يمكن استخدام Outbox لاحقًا، لكن لا يجوز عرض نجاح قبل ضمان النتيجة الأساسية.
+لا ينفذ القبول كسلسلة تحديثات مستقلة من APK. يستخدم RPC/Postgres Function محمية أو Supabase Edge Function للتحقق من حالة الطلب ثم تنفيذ العملية داخل Transaction واحدة:
 
-### إكمال مهمة
+1. التحقق من أن الطلب قيد المراجعة.
+2. تحديث الطلب إلى مقبول.
+3. إنشاء الحماية بقيم تاريخية مثبتة.
+4. تحديث حالة الرقم.
+5. إنشاء المهمة الأولى.
+6. إنشاء سجل التدقيق.
+7. إنشاء إشعار للعميل.
 
-التحقق من الحالة، تحديث المهمة، تسجيل المدير والوقت، تسجيل السجل المالي، إنشاء المهمة التالية، وسجل التدقيق يجب أن تمنع التكرار عبر قيد فريد أو Idempotency Key.
+إذا فشل جزء، لا تعرض الواجهة نجاحًا ولا تترك بيانات جزئية.
 
-## API
+### رفض الطلب
 
-يبدأ المشروع بـ REST موثق عبر OpenAPI. أمثلة المسارات:
+يجب أن تكون العملية محمية وتتحقق من سبب الرفض، ثم تحدث الطلب وتسجل السبب وتنشئ سجل التدقيق والإشعار دون إنشاء حماية أو مهمة.
 
-```text
-POST /auth/register
-POST /auth/login
-GET  /customer/numbers
-POST /customer/numbers
-POST /customer/numbers/:id/protection-requests
-GET  /customer/protection-requests
-GET  /admin/protection-requests
-POST /admin/protection-requests/:id/approve
-POST /admin/protection-requests/:id/reject
-GET  /admin/operational-tasks
-POST /admin/operational-tasks/:id/complete
-```
+### إكمال المهمة
 
-المسارات النهائية قابلة للتعديل عند تنفيذ Backend، لكن يجب الحفاظ على فصل مسارات العميل عن الإدارة والتحقق من الصلاحيات في كل عملية.
+تتحقق العملية من قابلية الإكمال، ثم تحدث المهمة، وتحفظ المدير والوقت، وتسجل الأثر المالي/التشغيلي، وتنشئ المهمة التالية وفق إعدادات شركة الحماية. يجب أن يمنع قيد فريد أو تحقق داخل المعاملة إنشاء الدورة التالية مرتين.
 
-## الوظائف الخلفية
+## الوظائف المجدولة
 
-يمكن إضافة Redis وBullMQ بعد تأسيس المسارات الأساسية. تستخدم للجدولة والتنبيهات وتحديث الحالات، لكن PostgreSQL تبقى مصدر الحقيقة. لا يعتمد النظام على Mutable State أو ذاكرة العملية لمعرفة الحالة التجارية.
+في البداية يمكن تحديث حالات المهام عند فتح قوائم المدير من خلال استعلامات محسوبة تعتمد على التاريخ، مع وظيفة مجدولة لاحقة عبر Supabase Cron/Edge Functions عند الحاجة. لا تُعتبر مهمة مكتملة أو تُنشأ مهمة جديدة اعتمادًا على مؤقت داخل APK؛ لأن التطبيق قد يكون مغلقًا.
+
+## المصادقة
+
+يستخدم Supabase Auth. يحدد التطبيق نوع الحساب بعد تسجيل الدخول من `profiles` أو جدول صلاحيات مرتبط بالمستخدم. يجب منع العميل من فتح مسارات المدير، مع الاعتماد النهائي على RLS وعمليات قاعدة البيانات لا على التوجيه وحده.
+
+## التخزين
+
+تستخدم Supabase Storage لشعارات الشركات وربما مستندات إثبات الدفع مستقبلًا. يجب إنشاء Buckets بسياسات وصول، وعدم جعل الملفات الحساسة عامة. تحفظ البيانات الوصفية في PostgreSQL، وتستخدم روابط موقعة عند الحاجة.
 
 ## الأمان
 
-- كلمات المرور باستخدام Argon2 أو bcrypt.
-- جلسات آمنة أو Access Token قصير وRefresh Token محمي.
-- HTTPS في البيئات المنشورة.
-- Rate limiting للمصادقة والعمليات الحساسة.
-- تحقق من DTOs في Backend.
-- عدم تسجيل الأسرار أو كلمات المرور في Logs.
-- حماية بيانات الهاتف والبيانات المالية.
-- Signed URLs للملفات.
-- Audit Log للعمليات الإدارية.
+- عدم تضمين `service_role` key في APK.
+- حفظ جلسة Supabase بالطريقة الآمنة المناسبة للمنصة.
+- استخدام RLS على كل جدول.
+- عدم تسجيل كلمات المرور أو المفاتيح أو بيانات الدفع الحساسة.
+- التحقق من المدخلات في Flutter وقاعدة البيانات.
+- منع تكرار العمليات عبر قيود وعمليات idempotent.
+- إخفاء أجزاء من أرقام الهاتف في القوائم والإشعارات عند الحاجة.
+- مراجعة سياسات RLS باختبارات SQL قبل اعتبار المرحلة مكتملة.
 
 ## الاختبارات
 
-تبدأ الاختبارات بقواعد المجال، ثم تكامل قاعدة البيانات، ثم سيناريوهات E2E. لا تعتبر مرحلة مكتملة إلا بعد نجاح اختباراتها وتحديث سجل التسليم.
+تشمل الاختبارات قواعد المجال، واختبارات Repository مع Supabase، واختبارات RLS لكل دور، واختبارات Flutter Widget، واختبارات تدفق E2E على APK. لا تعتبر الميزة مكتملة إذا نجحت الواجهة وفشلت سياسة الوصول أو لم تُحفظ العملية في قاعدة البيانات.
 
 ## مراجع
 
-[1]: https://docs.nestjs.com/modules "NestJS Modules"
-[2]: https://www.prisma.io/docs/orm/prisma-client/queries/transactions "Prisma Transactions"
-[3]: https://owasp.org/www-project-application-security-verification-standard/ "OWASP Application Security Verification Standard"
+[1]: https://supabase.com/docs "Supabase Documentation"
+[2]: https://supabase.com/docs/guides/database/postgres/row-level-security "Supabase Row Level Security"
+[3]: https://supabase.com/docs/guides/functions "Supabase Edge Functions"
+[4]: https://docs.flutter.dev/ "Flutter Documentation"
+[5]: https://supabase.com/docs/reference/dart/introduction "Supabase Dart Reference"

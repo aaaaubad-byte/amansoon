@@ -18,24 +18,24 @@ AMAN خدمة تشغيلية تساعد العميل على تقليل خطر ف
 - الواجهة لا تعرض نجاحًا قبل نجاح العملية على الخادم وقاعدة البيانات.
 - العميل يرى بياناته فقط.
 - المدير يدير العمليات الإدارية والتشغيلية وفق صلاحياته.
-- تبدأ البنية كتطبيق متكامل Modular Monolith، لا كـ Microservices.
+- التطبيق Android APK مبني بـ Flutter، ويدعم العميل والمدير من الهاتف.
+- Supabase هي قاعدة البيانات المركزية الفعلية في الخطة المجانية مبدئيًا.
+- تستخدم Row Level Security لعزل بيانات العملاء والصلاحيات.
 - الواجهة عربية وRTL أولًا، مع إبقاء التصميم قابلًا لإضافة الإنجليزية لاحقًا.
 
 ## التقنيات المعتمدة مبدئيًا
 
 | الطبقة | الاختيار |
 |---|---|
-| Frontend | Next.js + React + TypeScript |
-| UI | Tailwind CSS + مكتبة مكونات متوافقة مع RTL |
-| جلب البيانات | TanStack Query |
-| النماذج | React Hook Form + Zod |
-| Backend | NestJS + TypeScript |
-| API | REST + OpenAPI |
-| Database | PostgreSQL |
-| ORM | Prisma |
-| الوظائف الخلفية | Redis + BullMQ عند الحاجة التشغيلية |
-| الاختبارات | Vitest/Jest + Playwright |
-| الملفات | Object Storage متوافق مع S3 |
+| التطبيق | Flutter + Dart |
+| التصميم | Material 3 مع دعم RTL وMobile-First |
+| مصدر البيانات | Supabase Flutter SDK |
+| المصادقة | Supabase Auth |
+| قاعدة البيانات | Supabase PostgreSQL |
+| الصلاحيات | PostgreSQL RLS |
+| العمليات الحساسة | RPC/Postgres Functions أو Edge Functions |
+| الملفات | Supabase Storage |
+| الاختبارات | Flutter Test + Integration Test |
 
 ## كيف تستأنف العمل
 
@@ -55,7 +55,7 @@ AMAN خدمة تشغيلية تساعد العميل على تقليل خطر ف
 
 ## الحالة الحالية
 
-هذه الحزمة هي **خطة وهيكل تسليم قبل التنفيذ البرمجي**. تم ترحيلها إلى المستودع [aaaaubad-byte/amansoon](https://github.com/aaaaubad-byte/amansoon) على الفرع `main`. آخر Commit مرحّل هو `7b42928`، والمرحلة التالية هي تهيئة هيكل `frontend` و`backend` وقاعدة PostgreSQL.
+هذه الحزمة هي **خطة وهيكل تسليم قبل التنفيذ البرمجي**. تم ترحيلها إلى المستودع [aaaaubad-byte/amansoon](https://github.com/aaaaubad-byte/amansoon) على الفرع `main`. ستبدأ المرحلة البرمجية بتهيئة تطبيق Flutter وربطه بمشروع Supabase وقاعدة PostgreSQL المركزية.
 
 ## المستندات
 
