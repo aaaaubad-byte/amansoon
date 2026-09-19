@@ -17,6 +17,8 @@ void main() {
     final task = OperationalTask.fromJson({
       'id': 'task-1',
       'protection_id': 'pro-1',
+      'task_category': 'سداد',
+      'task_type': 'دوري',
       'task_amount': 5.0,
       'due_at': '2026-09-19T00:00:00Z',
       'cycle_number': 1,
@@ -25,5 +27,7 @@ void main() {
 
     expect(protection.status, 'active');
     expect(task.cycleNumber, 1);
+    expect(task.taskCategory, 'سداد');
+    expect(task.taskType, 'دوري');
   });
 }

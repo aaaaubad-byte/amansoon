@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/models/protection.dart';
 import '../../../data/models/protection_request.dart';
 import '../../../data/supabase/repositories/protection_repository.dart';
+import 'protection_details_page.dart';
 
 class CustomerActivityPage extends StatefulWidget {
   const CustomerActivityPage({super.key});
@@ -100,7 +101,7 @@ class _ProtectionsList extends StatelessWidget {
       if (snapshot.hasError) return _RetryView(onRetry: onRetry);
       final protections = snapshot.data ?? const <Protection>[];
       if (protections.isEmpty) return const Center(child: Text('لا توجد حمايات فعالة.'));
-      return RefreshIndicator(onRefresh: () async => onRetry(), child: ListView(padding: const EdgeInsets.all(20), children: protections.map((protection) => Card(child: ListTile(leading: const Icon(Icons.shield_outlined), title: Text('رقم ${protection.customerNumberId}'), subtitle: Text('${protection.protectionValue} — ${protection.durationDays} يوم\nتنتهي في ${protection.expiresAt.toLocal().toString().split(' ').first}'), isThreeLine: true, trailing: Chip(label: Text(protection.status == 'active' ? 'فعالة' : protection.status))))).toList()));
+      return RefreshIndicator(onRefresh: () async => onRetry(), child: ListView(padding: const EdgeInsets.all(20), children: protections.map((protection) => Card(child: ListTile(leading: const Icon(Icons.shield_outlined), title: Text('رقم ${protection.customerNumberId}'), subtitle: Text('${protection.protectionValue} — ${protection.durationDays} يوم\nتنتهي في ${protection.expiresAt.toLocal().toString().split(' ').first}'), isThreeLine: true, trailing: Chip(label: Text(protection.status == 'active' ? 'فعالة' : protection.status)), onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProtectionDetailsPage(protection: protection)))))).toList()));
     },
   );
 }

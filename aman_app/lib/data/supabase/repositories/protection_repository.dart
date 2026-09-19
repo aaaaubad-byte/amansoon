@@ -13,7 +13,7 @@ class ProtectionRepository {
 
   static const _requestFields = 'id, customer_id, customer_number_id, telecom_company_id, package_id, payment_method_id, protection_value_snapshot, duration_days_snapshot, transfer_reference, status, rejection_reason, created_at';
   static const _protectionFields = 'id, customer_id, customer_number_id, telecom_company_id, protection_value, duration_days, starts_at, expires_at, status';
-  static const _taskFields = 'id, protection_id, task_amount, due_at, cycle_number, status, completed_at';
+  static const _taskFields = 'id, protection_id, task_category, task_type, task_amount, due_at, cycle_number, status, completed_at';
 
   Future<List<PaymentMethod>> listVisiblePaymentMethods() async {
     final rows = await _client.from('payment_methods').select('id, name, type, account_details').eq('status', 'active').eq('visible_to_customers', true).order('name').limit(100);

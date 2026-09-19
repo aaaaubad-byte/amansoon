@@ -6,6 +6,8 @@ class OperationalTask {
     required this.dueAt,
     required this.cycleNumber,
     required this.status,
+    this.taskCategory,
+    this.taskType,
     this.completedAt,
   });
 
@@ -15,6 +17,8 @@ class OperationalTask {
   final DateTime dueAt;
   final int cycleNumber;
   final String status;
+  final String? taskCategory;
+  final String? taskType;
   final DateTime? completedAt;
 
   factory OperationalTask.fromJson(Map<String, dynamic> json) {
@@ -25,6 +29,8 @@ class OperationalTask {
       dueAt: DateTime.parse(json['due_at'] as String),
       cycleNumber: json['cycle_number'] as int,
       status: json['status'] as String,
+      taskCategory: json['task_category'] as String?,
+      taskType: json['task_type'] as String?,
       completedAt: json['completed_at'] == null ? null : DateTime.parse(json['completed_at'] as String),
     );
   }

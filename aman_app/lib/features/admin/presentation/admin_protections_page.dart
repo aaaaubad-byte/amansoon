@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../data/models/protection.dart';
 import '../../../data/supabase/repositories/protection_repository.dart';
+import '../../customer/presentation/protection_details_page.dart';
 
 class AdminProtectionsPage extends StatefulWidget {
   const AdminProtectionsPage({super.key});
@@ -64,6 +65,9 @@ class _AdminProtectionsPageState extends State<AdminProtectionsPage> {
                     subtitle: Text('القيمة: ${protection.protectionValue} — ${protection.durationDays} يوم\nتنتهي: ${_date(protection.expiresAt)}'),
                     isThreeLine: true,
                     trailing: Chip(label: Text(_status(protection.status))),
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ProtectionDetailsPage(protection: protection),
+                    )),
                   ),
                 );
               },

@@ -5,6 +5,7 @@ import 'data/models/customer_number.dart';
 import 'data/models/telecom_company.dart';
 import 'data/supabase/repositories/auth_repository.dart';
 import 'data/supabase/repositories/catalog_repository.dart';
+import 'data/supabase/repositories/notification_repository.dart';
 import 'features/admin/presentation/admin_dashboard.dart';
 import 'features/customer/presentation/protection_request_page.dart';
 import 'features/customer/presentation/customer_activity_page.dart';
@@ -78,12 +79,17 @@ class CustomerDashboard extends StatelessWidget {
           label: const Text('طلباتي وحماياتي'),
         ),
         const SizedBox(height: 12),
-        OutlinedButton.icon(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const NotificationsPage()),
+        FutureBuilder<int>(
+          future: NotificationRepository(Supabase.instance.client).unreadCount(),
+          builder: (context, snapshot) => OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const NotificationsPage()),
+            ),
+            icon: const Icon(Icons.notifications_outlined),
+            label: Text(snapshot.data != null && snapshot.data! > 0
+                ? 'الإشعارات (${snapshot.data})'
+                : 'الإشعارات'),
           ),
-          icon: const Icon(Icons.notifications_outlined),
-          label: const Text('الإشعارات'),
         ),
       ],
     );
