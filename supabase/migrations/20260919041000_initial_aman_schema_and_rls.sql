@@ -48,3 +48,67 @@ REVOKE ALL ON FUNCTION public.approve_protection_request(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.approve_protection_request(uuid) TO authenticated;
 REVOKE ALL ON FUNCTION public.reject_protection_request(uuid, text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.reject_protection_request(uuid, text) TO authenticated;
+
+
+-- Complete a task and create exactly one next cycle for the same protection.
+CREATE OR REPLACE FUNCTION public.complete_operational_task(p_task_id uuid) RETURNS uuid
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_task public.operational_tasks%ROWTYPE;
+  v_next_id uuid;
+  v_recurrence_days integer := 30;
+  v_next_amount numeric;
+BEGIN
+  IF NOT public.is_admin() THEN RAISE EXCEPTION 'admin role required' USING ERRCODE = '42501'; END IF;
+  SELECT * INTO v_task FROM public.operational_tasks WHERE id = p_task_id FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'task not found' USING ERRCODE = 'P0002'; END IF;
+  IF v_task.status IN ('completed', 'cancelled') THEN RAISE EXCEPTION 'task cannot be completed' USING ERRCODE = '22023'; END IF;
+  SELECT COALESCE(recurrence_days, 30), COALESCE(task_amount, v_task.task_amount)
+    INTO v_recurrence_days, v_next_amount
+    FROM public.task_settings WHERE telecom_company_id = v_task.telecom_company_id LIMIT 1;
+  UPDATE public.operational_tasks SET status = 'completed', completed_by = auth.uid(), completed_at = now(), updated_at = now() WHERE id = v_task.id;
+  SELECT id INTO v_next_id FROM public.operational_tasks WHERE protection_id = v_task.protection_id AND cycle_number = v_task.cycle_number + 1 FOR UPDATE;
+  IF NOT FOUND THEN
+    INSERT INTO public.operational_tasks (protection_id, telecom_company_id, task_amount, due_at, cycle_number, status)
+    VALUES (v_task.protection_id, v_task.telecom_company_id, v_next_amount, now() + make_interval(days => v_recurrence_days), v_task.cycle_number + 1, 'upcoming')
+    RETURNING id INTO v_next_id;
+  END IF;
+  INSERT INTO public.audit_logs (actor_id, action, entity_type, entity_id, after_data)
+    VALUES (auth.uid(), 'complete', 'operational_task', v_task.id, jsonb_build_object('next_task_id', v_next_id, 'cycle_number', v_task.cycle_number));
+  RETURN v_next_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.complete_operational_task(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.complete_operational_task(uuid) TO authenticated;
+
+
+-- Final correction: preserve the completed task amount when no company setting exists.
+CREATE OR REPLACE FUNCTION public.complete_operational_task(p_task_id uuid) RETURNS uuid
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_task public.operational_tasks%ROWTYPE;
+  v_next_id uuid;
+  v_recurrence_days integer := 30;
+  v_next_amount numeric := 0;
+BEGIN
+  IF NOT public.is_admin() THEN RAISE EXCEPTION 'admin role required' USING ERRCODE = '42501'; END IF;
+  SELECT * INTO v_task FROM public.operational_tasks WHERE id = p_task_id FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'task not found' USING ERRCODE = 'P0002'; END IF;
+  IF v_task.status IN ('completed', 'cancelled') THEN RAISE EXCEPTION 'task cannot be completed' USING ERRCODE = '22023'; END IF;
+  v_next_amount := v_task.task_amount;
+  SELECT COALESCE(recurrence_days, 30), COALESCE(task_amount, v_task.task_amount)
+    INTO v_recurrence_days, v_next_amount FROM public.task_settings
+    WHERE telecom_company_id = v_task.telecom_company_id LIMIT 1;
+  UPDATE public.operational_tasks SET status = 'completed', completed_by = auth.uid(), completed_at = now(), updated_at = now() WHERE id = v_task.id;
+  SELECT id INTO v_next_id FROM public.operational_tasks WHERE protection_id = v_task.protection_id AND cycle_number = v_task.cycle_number + 1 FOR UPDATE;
+  IF NOT FOUND THEN
+    INSERT INTO public.operational_tasks (protection_id, telecom_company_id, task_amount, due_at, cycle_number, status)
+    VALUES (v_task.protection_id, v_task.telecom_company_id, v_next_amount, now() + make_interval(days => v_recurrence_days), v_task.cycle_number + 1, 'upcoming')
+    RETURNING id INTO v_next_id;
+  END IF;
+  INSERT INTO public.audit_logs (actor_id, action, entity_type, entity_id, after_data)
+    VALUES (auth.uid(), 'complete', 'operational_task', v_task.id, jsonb_build_object('next_task_id', v_next_id, 'cycle_number', v_task.cycle_number));
+  RETURN v_next_id;
+END;
+$$;

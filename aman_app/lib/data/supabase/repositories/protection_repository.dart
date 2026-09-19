@@ -57,6 +57,11 @@ class ProtectionRepository {
     return result as String;
   }
 
+  Future<String> completeTask(String taskId) async {
+    final result = await _client.rpc('complete_operational_task', params: {'p_task_id': taskId});
+    return result as String;
+  }
+
   Future<ProtectionRequest> createRequest({
     required String customerNumberId,
     required String telecomCompanyId,

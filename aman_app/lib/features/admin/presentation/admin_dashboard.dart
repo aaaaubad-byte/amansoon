@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/models/protection_package.dart';
 import '../../../data/models/telecom_company.dart';
 import '../../../data/supabase/repositories/catalog_repository.dart';
+import 'admin_tasks_page.dart';
 import 'request_review_page.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -121,6 +122,9 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 onOpenRequests: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const RequestReviewPage()),
                 ),
+                onOpenTasks: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AdminTasksPage()),
+                ),
               ),
               _PackagesTab(companies: companies, catalog: _catalog),
             ],
@@ -140,6 +144,7 @@ class _CompaniesTab extends StatelessWidget {
     required this.onToggle,
     required this.onClearError,
     required this.onOpenRequests,
+    required this.onOpenTasks,
   });
 
   final List<TelecomCompany> companies;
@@ -149,6 +154,7 @@ class _CompaniesTab extends StatelessWidget {
   final ValueChanged<TelecomCompany> onToggle;
   final VoidCallback onClearError;
   final VoidCallback onOpenRequests;
+  final VoidCallback onOpenTasks;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +168,11 @@ class _CompaniesTab extends StatelessWidget {
               tooltip: 'طلبات الحماية',
               onPressed: onOpenRequests,
               icon: const Icon(Icons.fact_check_outlined),
+            ),
+            IconButton(
+              tooltip: 'المهام التشغيلية',
+              onPressed: onOpenTasks,
+              icon: const Icon(Icons.task_alt_outlined),
             ),
             FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('إضافة')),
           ],
