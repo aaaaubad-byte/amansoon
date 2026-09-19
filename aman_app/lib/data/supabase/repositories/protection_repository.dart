@@ -1,6 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../models/operational_task.dart';
 import '../../models/payment_method.dart';
+import '../../models/protection.dart';
 import '../../models/protection_package.dart';
 import '../../models/protection_request.dart';
 
@@ -10,15 +12,11 @@ class ProtectionRepository {
   final SupabaseClient _client;
 
   static const _requestFields = 'id, customer_id, customer_number_id, telecom_company_id, package_id, payment_method_id, protection_value_snapshot, duration_days_snapshot, transfer_reference, status, rejection_reason, created_at';
+  static const _protectionFields = 'id, customer_number_id, protection_value, duration_days, starts_at, expires_at, status';
+  static const _taskFields = 'id, protection_id, task_amount, due_at, cycle_number, status, completed_at';
 
   Future<List<PaymentMethod>> listVisiblePaymentMethods() async {
-    final rows = await _client
-        .from('payment_methods')
-        .select('id, name, type, account_details')
-        .eq('status', 'active')
-        .eq('visible_to_customers', true)
-        .order('name')
-        .limit(100);
+    final rows = await _client.from('payment_methods').select('id, name, type, account_details').eq('status', 'active').eq('visible_to_customers', true).order('name').limit(100);
     return rows.map(PaymentMethod.fromJson).toList(growable: false);
   }
 
@@ -27,6 +25,21 @@ class ProtectionRepository {
     if (userId == null) throw const AuthException('يجب تسجيل الدخول أولًا.');
     final rows = await _client.from('protection_requests').select(_requestFields).eq('customer_id', userId).order('created_at', ascending: false).limit(100);
     return rows.map(ProtectionRequest.fromJson).toList(growable: false);
+  }
+
+  Future<List<Protection>> listMyProtections() async {
+    final rows = await _client.from('protections').select(_protectionFields).order('starts_at', ascending: false).limit(100);
+    return rows.map(Protection.fromJson).toList(growable: false);
+  }
+
+  Future<List<OperationalTask>> listMyTasks() async {
+    final rows = await _client.from('operational_tasks').select(_taskFields).order('due_at').limit(200);
+    return rows.map(OperationalTask.fromJson).toList(growable: false);
+  }
+
+  Future<List<OperationalTask>> listAdminTasks() async {
+    final rows = await _client.from('operational_tasks').select(_taskFields).order('due_at').limit(200);
+    return rows.map(OperationalTask.fromJson).toList(growable: false);
   }
 
   Future<List<ProtectionRequest>> listReviewRequests() async {
