@@ -223,3 +223,20 @@ SUPABASE_ANON_KEY=
 - تمنع الواجهة تعطيل حساب المدير الحالي، ولا تعرض تعديل الدور لتقليل مخاطر فقدان الصلاحيات.
 - تم التحقق من سياسات Supabase الفعلية `profiles_select_self_or_admin` و`profiles_update_self_or_admin`.
 - أضيف اختبار تحويل ملف المستخدم والتحقق من الدور والحالة.
+
+## التقوية والمؤشرات 2026-09-19
+
+- أضيفت الهجرة `20260919060000_harden_security_and_user_status.sql`.
+- أصبحت إدارة حالة المستخدم عبر RPC محمية `admin_set_profile_status` مع إنشاء سجل تدقيق، ومنع تعطيل المدير الحالي داخل قاعدة البيانات.
+- أضيف Trigger يمنع المستخدم غير المدير من تغيير `role` أو `status` حتى لو استُخدم مسار تحديث مباشر.
+- أضيفت فهارس المفاتيح الأجنبية الرئيسية لمعالجة تنبيهات الأداء.
+- أضيفت الهجرة `20260919060100_cleanup_security_definer_acl.sql` لإزالة صلاحية RPC العامة عن `is_admin` و`rls_auto_enable`.
+- أضيفت شاشة مؤشرات الإدارة مع عدادات العملاء والحمايات والطلبات والمهام.
+- لم تُشغل اختبارات Flutter أو البناء لعدم توفر Flutter/Dart SDK.
+
+## تجهيز الاختبارات والإصدار 2026-09-19
+
+- أضيفت `analysis_options.yaml` وسجل `aman_app/CHANGELOG.md` وقائمة `docs/RELEASE-CHECKLIST.md`.
+- تم تحديث `.gitignore` لاستبعاد ملفات Flutter وAndroid ومفاتيح Keystore.
+- لا يوجد Android project مولد داخل المستودع حتى الآن؛ يلزم Flutter SDK لإنشاء مجلد Android وضبط application ID وبناء APK.
+- لم يجد فحص Supabase امتدادي `pg_cron` أو `pg_net`، لذلك الجدولة التلقائية تحتاج تفعيل Scheduler أو Edge Function مجدولة لاحقًا.
