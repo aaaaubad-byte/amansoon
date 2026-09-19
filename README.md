@@ -55,7 +55,7 @@ AMAN خدمة تشغيلية تساعد العميل على تقليل خطر ف
 
 ## الحالة الحالية
 
-هذه الحزمة هي **خطة وهيكل تسليم قبل التنفيذ البرمجي**. تم ترحيلها إلى المستودع [aaaaubad-byte/amansoon](https://github.com/aaaaubad-byte/amansoon) على الفرع `main`. ستبدأ المرحلة البرمجية بتهيئة تطبيق Flutter وربطه بمشروع Supabase وقاعدة PostgreSQL المركزية.
+هذه الحزمة دخلت مرحلة التنفيذ. تم ربطها بالمستودع [aaaaubad-byte/amansoon](https://github.com/aaaaubad-byte/amansoon) وبمشروع Supabase الصحيح `amansoon` ذي المرجع `yqsnnooupyhahohyyiho`. أُنشئت الهجرة الأولى للجداول والعلاقات وسياسات RLS، والخطوة التالية هي تهيئة تطبيق Flutter وربطه بالقاعدة.
 
 ## المستندات
 
