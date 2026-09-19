@@ -55,6 +55,20 @@ class _AdminTasksPageState extends State<AdminTasksPage> {
     }
   }
 
+  Future<void> _refreshStatuses() async {
+    try {
+      final updated = await _repository.refreshTaskStatuses();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تحديث حالات $updated مهمة.')),
+        );
+        _refresh();
+      }
+    } on PostgrestException catch (error) {
+      if (mounted) setState(() => _error = _friendlyError(error));
+    }
+  }
+
   String _friendlyError(PostgrestException error) {
     if (error.code == '42501') return 'ليست لديك صلاحية لإكمال المهمة.';
     if (error.code == '22023') return 'المهمة مكتملة أو ملغاة مسبقًا.';
@@ -76,7 +90,16 @@ class _AdminTasksPageState extends State<AdminTasksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('المهام التشغيلية')),
+      appBar: AppBar(
+        title: const Text('المهام التشغيلية'),
+        actions: [
+          IconButton(
+            tooltip: 'تحديث الحالات الزمنية',
+            onPressed: _refreshStatuses,
+            icon: const Icon(Icons.update_outlined),
+          ),
+        ],
+      ),
       body: FutureBuilder<List<OperationalTask>>(
         future: _future,
         builder: (context, snapshot) {

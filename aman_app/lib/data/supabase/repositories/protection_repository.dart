@@ -67,6 +67,11 @@ class ProtectionRepository {
     return result as String;
   }
 
+  Future<int> refreshTaskStatuses() async {
+    final result = await _client.rpc('refresh_operational_task_statuses');
+    return (result as num).toInt();
+  }
+
   Future<ProtectionRequest> createRequest({
     required String customerNumberId,
     required String telecomCompanyId,
