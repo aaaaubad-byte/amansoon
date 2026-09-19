@@ -5,6 +5,8 @@ class ProtectionPackage {
     required this.name,
     required this.protectionValue,
     required this.durationDays,
+    required this.status,
+    required this.visibleToCustomers,
     this.description,
   });
 
@@ -13,7 +15,11 @@ class ProtectionPackage {
   final String name;
   final num protectionValue;
   final int durationDays;
+  final String status;
+  final bool visibleToCustomers;
   final String? description;
+
+  bool get isActive => status == 'active';
 
   factory ProtectionPackage.fromJson(Map<String, dynamic> json) {
     return ProtectionPackage(
@@ -22,6 +28,8 @@ class ProtectionPackage {
       name: json['name'] as String,
       protectionValue: json['protection_value'] as num,
       durationDays: json['duration_days'] as int,
+      status: json['status'] as String? ?? 'active',
+      visibleToCustomers: json['visible_to_customers'] as bool? ?? true,
       description: json['description'] as String?,
     );
   }

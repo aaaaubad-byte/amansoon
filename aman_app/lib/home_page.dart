@@ -5,6 +5,7 @@ import 'data/models/customer_number.dart';
 import 'data/models/telecom_company.dart';
 import 'data/supabase/repositories/auth_repository.dart';
 import 'data/supabase/repositories/catalog_repository.dart';
+import 'features/admin/presentation/admin_dashboard.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({required this.repository, required this.profile, super.key});
@@ -27,38 +28,8 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: isAdmin
-          ? _WelcomePanel(profile: profile, isAdmin: true)
+          ? const AdminDashboard()
           : CustomerDashboard(profile: profile),
-    );
-  }
-}
-
-class _WelcomePanel extends StatelessWidget {
-  const _WelcomePanel({required this.profile, required this.isAdmin});
-
-  final Map<String, dynamic> profile;
-  final bool isAdmin;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Text(
-          'مرحبًا ${profile['full_name'] ?? ''}',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        const SizedBox(height: 8),
-        Text(isAdmin ? 'يمكنك متابعة الطلبات والعمليات.' : 'تابع أرقامك وطلبات الحماية من هنا.'),
-        const SizedBox(height: 24),
-        const Card(
-          child: ListTile(
-            leading: Icon(Icons.verified_user_outlined),
-            title: Text('الحساب متصل بقاعدة البيانات'),
-            subtitle: Text('تم التحقق من الجلسة والصلاحيات عبر Supabase'),
-          ),
-        ),
-      ],
     );
   }
 }
