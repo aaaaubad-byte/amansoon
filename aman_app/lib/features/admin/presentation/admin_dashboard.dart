@@ -6,6 +6,7 @@ import '../../../data/models/telecom_company.dart';
 import '../../../data/supabase/repositories/catalog_repository.dart';
 import 'admin_tasks_page.dart';
 import 'request_review_page.dart';
+import 'task_settings_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -125,6 +126,9 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 onOpenTasks: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const AdminTasksPage()),
                 ),
+                onOpenSettings: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const TaskSettingsPage()),
+                ),
               ),
               _PackagesTab(companies: companies, catalog: _catalog),
             ],
@@ -145,6 +149,7 @@ class _CompaniesTab extends StatelessWidget {
     required this.onClearError,
     required this.onOpenRequests,
     required this.onOpenTasks,
+    required this.onOpenSettings,
   });
 
   final List<TelecomCompany> companies;
@@ -155,6 +160,7 @@ class _CompaniesTab extends StatelessWidget {
   final VoidCallback onClearError;
   final VoidCallback onOpenRequests;
   final VoidCallback onOpenTasks;
+  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +179,11 @@ class _CompaniesTab extends StatelessWidget {
               tooltip: 'المهام التشغيلية',
               onPressed: onOpenTasks,
               icon: const Icon(Icons.task_alt_outlined),
+            ),
+            IconButton(
+              tooltip: 'إعدادات المهام',
+              onPressed: onOpenSettings,
+              icon: const Icon(Icons.settings_outlined),
             ),
             FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('إضافة')),
           ],
