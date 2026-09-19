@@ -8,6 +8,7 @@ import 'data/supabase/repositories/catalog_repository.dart';
 import 'features/admin/presentation/admin_dashboard.dart';
 import 'features/customer/presentation/protection_request_page.dart';
 import 'features/customer/presentation/customer_activity_page.dart';
+import 'features/customer/presentation/notifications_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({required this.repository, required this.profile, super.key});
@@ -75,6 +76,14 @@ class CustomerDashboard extends StatelessWidget {
           ),
           icon: const Icon(Icons.history),
           label: const Text('طلباتي وحماياتي'),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const NotificationsPage()),
+          ),
+          icon: const Icon(Icons.notifications_outlined),
+          label: const Text('الإشعارات'),
         ),
       ],
     );
