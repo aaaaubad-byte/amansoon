@@ -1,4 +1,5 @@
 -- Applied to Supabase project amansoon (yqsnnooupyhahohyyiho)
+-- Supabase migration version: 20260919011001
 -- Migration name: initial_aman_schema_and_rls
 -- The canonical execution was applied through the Supabase MCP connection.
 -- Keep all future schema changes as versioned SQL migrations in this directory.
